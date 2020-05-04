@@ -250,6 +250,7 @@ public class App {
 			rangeContainer.add(range);
 			azElContainer.add(azEl);
 
+			// Print range, azimuth, and elevation for comparison
 			System.out.println("step: " + iStep + ", date: " + extrapDate);
 			System.out.println("keplerian: " + stateToRangeAzElStr(kState, staF));
 			System.out.println("sgp4/sdp4: " + stateToRangeAzElStr(sState, staF));
@@ -267,17 +268,17 @@ public class App {
 		}
 
 		// Print initial orbit
-		System.out.println("Initial orbit: ");
+		System.out.println(String.format("Initial orbit at %s: ", initialOrbit.getDate()));
 		System.out.println(initialOrbit.toString());
 
 		// Perform initial orbit determination
 		IodLambert lambert = new IodLambert(mu);
-		// TODO: Calculate posigrade and number of revolutions
+		// TODO: Calculate posigrade flag and number of revolutions
 		boolean posigrade = true;
 		int nRev = 0;
 		KeplerianOrbit orbitEstimation = lambert.estimate(inertialF, posigrade, nRev, initialPosition, initialDate,
 				finalPosition, finalDate);
-		System.out.println("Lambert IOD estimation: ");
+		System.out.println(String.format("Lambert IOD estimation at %s: ", orbitEstimation.getDate()));
 		System.out.println(orbitEstimation.toString());
 
 		// Perform batch least squares estimation to correct orbit
@@ -294,7 +295,8 @@ public class App {
 		azElContainer.forEach(measurement -> leastSquares.addMeasurement(measurement));
 		rangeContainer.forEach(measurement -> leastSquares.addMeasurement(measurement));
 		AbstractIntegratedPropagator[] lSPropagators = leastSquares.estimate();
-		System.out.println("Least squares estimation: ");
+		System.out.println(
+				String.format("Least squares estimation at %s: ", lSPropagators[satIdx].getInitialState().getDate()));
 		System.out.println(lSPropagators[satIdx].getInitialState());
 	}
 }
